@@ -6,11 +6,19 @@ package domainModel;
 
 public class Sound {
     private TypeNoise noise = TypeNoise.WHISTLING;
-    public Air air;
+    private Air air;
+
+    public TypeNoise getNoise() { return noise;}
+    public Air getAir() { return air;}
+
     public void SwitchNoise() {
-        noise=TypeNoise.ROARING;
-        System.out.print(" Тоненький свист перерос в рев воздуха, ");
-        air = new Air(this);
-        air.AirBreaksIn();
+        if (noise == TypeNoise.ROARING) {
+            throw new IllegalStateException();
+        } else {
+            noise = TypeNoise.ROARING;
+            System.out.print(" Тоненький свист перерос в рев воздуха, ");
+            air = new Air(this);
+            air.AirBreaksIn();
+        }
     }
 }

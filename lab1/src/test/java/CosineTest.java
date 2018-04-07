@@ -67,6 +67,27 @@ public class CosineTest extends Assert {
     }
 
     @Test
+    public void testCosZeroPlusDelta() {
+        double expected, actual;
+        String message;
+        // 0+delta
+        expected = (double) 0.99999999849;
+        actual = CosineTaylor.cos(Math.PI*0.001);
+        message = "Zero \nEquals: X = " + Math.PI*0.001 + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+    @Test
+    public void testCosZeroMinusDelta() {
+        double expected, actual;
+        String message;
+        // 0-delta
+        expected = (double) 0.99999999849;
+        actual = CosineTaylor.cos(-Math.PI*0.001);
+        message = "Zero \nEquals: X = " + -Math.PI*0.001 + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
     public void testCosPlusPi() {
         double expected, actual;
         String message;
@@ -74,6 +95,30 @@ public class CosineTest extends Assert {
         expected = (double) -1;
         actual = CosineTaylor.cos(Math.PI);
         message = "Plus Pi \nEquals: X = " + Math.PI + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+
+
+    @Test
+    public void testCosPlusPiPlusDelta() {
+        double expected, actual;
+        String message;
+        // Pi + delta
+        expected = (double) -0.9999950652;
+        actual = CosineTaylor.cos(Math.PI+Math.PI*0.001);
+        message = "Plus Pi \nEquals: X = " + (Math.PI+Math.PI*0.001) + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
+    public void testCosPlusPiMinusDelta() {
+        double expected, actual;
+        String message;
+        // Pi + delta
+        expected = (double) -0.9999950652;
+        actual = CosineTaylor.cos(Math.PI-Math.PI*0.001);
+        message = "Plus Pi \nEquals: X = " + (Math.PI-Math.PI*0.001) + "; Cos(X) = " + expected;
         assertEquals(message,expected, actual, DELTA);
     }
 
@@ -89,6 +134,28 @@ public class CosineTest extends Assert {
     }
 
     @Test
+    public void testCosMinusPiPlusDelta() {
+        double expected, actual;
+        String message;
+        // -Pi+PI*0.001
+        expected = (double) -0.9999950652;;
+        actual = CosineTaylor.cos(-Math.PI+Math.PI*0.001 );
+        message = "Minus Pi \nEquals: X = " + (-Math.PI+Math.PI*0.001) + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
+    public void testCosMinusPiMinussDelta() {
+        double expected, actual;
+        String message;
+        // -Pi-PI*0.001
+        expected = (double) -0.9999950652;;
+        actual = CosineTaylor.cos(-Math.PI-Math.PI*0.001 );
+        message = "Minus Pi \nEquals: X = " + (-Math.PI-Math.PI*0.001) + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
     public void testCosPlusHalfPi() {
         double expected, actual;
         String message;
@@ -100,13 +167,57 @@ public class CosineTest extends Assert {
     }
 
     @Test
+    public void testCosPlusHalfPiPlusDelta() {
+        double expected, actual;
+        String message;
+        // Pi/2+Math.PI*0.001
+        expected = (double) -0.00031415926;
+        actual = CosineTaylor.cos(Math.PI/2+Math.PI*0.0001);
+        message = "Plus Pi/2 \nEquals: X = " + (Math.PI/2+Math.PI*0.0001) + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
+    public void testCosPlusHalfPiMinusDelta() {
+        double expected, actual;
+        String message;
+        // Pi/2+Math.PI*0.001
+        expected = (double) 0.00031415926;
+        actual = CosineTaylor.cos(Math.PI/2-Math.PI*0.0001);
+        message = "Plus Pi/2 \nEquals: X = " + (Math.PI/2-Math.PI*0.0001) + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
     public void testCosMinusHalfPi() {
         double expected, actual;
         String message;
         // -Pi/2
         expected = (double) 0;
-        actual = CosineTaylor.cos(-Math.PI /2);
+        actual = CosineTaylor.cos(-Math.PI /2-Math.PI*0.0001);
         message = "Minus Pi/2 \nEquals: X = " + -Math.PI/2 + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
+    public void testCosMinusHalfPiMinusDelta() {
+        double expected, actual;
+        String message;
+        // -Pi/2
+        expected = (double) 0.00031415926;
+        actual = CosineTaylor.cos(-Math.PI /2-Math.PI*0.0001);
+        message = "Minus Pi/2 \nEquals: X = " + -Math.PI/2 + "; Cos(X) = " + expected;
+        assertEquals(message,expected, actual, DELTA);
+    }
+
+    @Test
+    public void testCosMinusHalfPiPlusDelta() {
+        double expected, actual;
+        String message;
+        // -Pi/2
+        expected = (double) -0.00031415926;
+        actual = CosineTaylor.cos(-Math.PI /2-Math.PI*0.0001);
+        message = "Minus Pi/2 \nEquals: X = " + (-Math.PI/2-Math.PI*0.0001) + "; Cos(X) = " + expected;
         assertEquals(message,expected, actual, DELTA);
     }
 

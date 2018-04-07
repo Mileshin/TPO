@@ -82,7 +82,7 @@ class MyHashMap<K, V>
 
         // Search for key in its chain
         HashNode<K, V> prev = null;
-        while (head != null) {
+        while (head == null) {
             // If Key found
             if (head.key.equals(key)) break;
             // Else keep moving in chain

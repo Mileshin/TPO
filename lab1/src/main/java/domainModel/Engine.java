@@ -17,7 +17,7 @@ public class Engine {
             throw new IllegalStateException();
         } else {
             Enable = true;
-            System.out.print("Зажужжал мотор.");
+            System.out.print("Зажужжал мотор");
 
             noise = new Sound();
             Thread.sleep(200);

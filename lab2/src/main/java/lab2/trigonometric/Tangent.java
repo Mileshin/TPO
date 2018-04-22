@@ -1,114 +1,59 @@
 package lab2.trigonometric;
 
-import lab2.AbstractFunction;
-import lab2.Functions;
-import lab2.util.BigDecimalSqrt;
+import java.util.HashMap;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
+public class Tangent {
 
-import static java.lang.Double.*;
-import static java.lang.Math.PI;
+  public static boolean isStub = false;
 
-/**
- * Created by Andrey on 18.04.2018.
- */
-public class Tangent extends AbstractFunction {
+  public static void setStub(boolean st) {
+    isStub = st;
+  }
 
-    //stub values
-    {
-        table.put(-PI, 0.0);
-        table.put(-PI / 2, NaN);
-        table.put(0.0, 0.0);
-        table.put(PI / 2, NaN);
-        table.put(PI, 0.0);
-        table.put(3 * PI / 4, -1.0);
-        table.put(-3 * PI / 4, 1.0);
-        table.put( PI / 4, 1.0);
-        table.put(-PI / 4, -1.0);
-        function = Functions.TANGENT;
-
-        table.put(-PI * 1.5, NaN);
-        table.put(-PI * 1.5 + PI / 16, -5.027339481844);
-        table.put(-PI * 1.5 + 2 * PI / 16, -2.414214618296);
+  public static double calculate(double x, double accuracy) {
+    if (isStub) {
+      return calculateStub(x);
     }
-
-    Cosinus cos;
-    double tan;
-
-    public Tangent(double precision) {
-        super(precision);
-        cos = new Cosinus(precision);
+    else{
+      double res = Sine.calculate(x, accuracy) / Cosine.calculate(x, accuracy);
+      // Java doesn't support complex infinity so use positive infinity instead
+      if(Double.isInfinite(res)) res = Double.POSITIVE_INFINITY;
+      return res;
     }
+  }
 
-    @Override
-    public void setPrecision(double precision){
-        super.setPrecision(precision);
-        cos.setPrecision(precision);
-    }
+  private static double calculateStub(double x) {
+    HashMap<Double, Double> testMap = new HashMap<Double, Double>();
+    testMap.put(Double.NaN,Double.NaN);
+    testMap.put(Double.POSITIVE_INFINITY,Double.NaN);
+    testMap.put(Double.NEGATIVE_INFINITY,Double.NaN);
+    testMap.put(Math.PI/6,0.577350269189625);
+    testMap.put( Math.PI*3/4,-1.0);
+    testMap.put( -Math.PI/4,-1.0);
+    testMap.put( -Math.PI*5/6,0.577350269189626);
+    testMap.put( Math.PI*9/4,0.999999999999919);
+    testMap.put( -Math.PI*11/6,0.577350269189625);
+    testMap.put(0.0,0.0);
+    testMap.put( 0-0.01,-0.0100003333466672);
+    testMap.put(0.01,0.0100003333466672);
+    testMap.put(Math.PI-0.01,-0.0100003333466668);
+    testMap.put( Math.PI,0.0);
+    testMap.put( Math.PI+0.01,0.0100003333466665);
+    testMap.put( -Math.PI-0.01,-0.0100003333466665);
+    testMap.put( -Math.PI,0.0);
+    testMap.put( -Math.PI+0.01,0.0100003333466668);
+    testMap.put(Math.PI/2-0.01,99.996666644448);
+    testMap.put( Math.PI/2,Double.POSITIVE_INFINITY);
+    testMap.put( Math.PI/2+0.01,-99.9966666444508);
+    testMap.put( -Math.PI/2-0.01,99.9966666444441);
+    testMap.put( -Math.PI/2,Double.POSITIVE_INFINITY);
+    testMap.put( -Math.PI/2+0.01,-99.9966666444441);
 
-    @Override
-    protected double calculate(double arg) {
-        if (Math.abs(arg - Math.PI) < getPrecision() ) {
-            return 0d;
-        } else if (Math.abs(arg + Math.PI) < getPrecision() ) {
-            return 0d;
-        } else if (Math.abs(arg) < getPrecision() ) {
-            return 0d;
-        } else if (Math.abs(arg - Math.PI/2) < getPrecision()) {
-            return NaN;
-        } else if (Math.abs(arg + Math.PI/2) < getPrecision()) {
-            return NaN;
-        } else if (Math.abs(arg - 2*Math.PI) < getPrecision()) {
-            return 0d;
-        } else if (Math.abs(arg + 2*Math.PI) < getPrecision()) {
-            return 0d;
-        } else if (Math.abs(arg - 3*Math.PI/2) < getPrecision()) {
-            return NaN;
-        } else if (Math.abs(arg + 3*Math.PI/2) < getPrecision()) {
-            return NaN;
-        }
+    testMap.put(-Math.PI/6,-0.577350269189625);
+    testMap.put(-Math.PI*3/4,1.0);
+    testMap.put(-Math.PI*9/4,-0.999999999999961);
 
-        if( isInfinite(arg) || isNaN(arg) ){
-            return NaN;
-        }
-
-        double cosVal = cos.calc(arg);
-        int scale = 10;
-        BigDecimal last;
-        BigDecimal value = new BigDecimal(0d, MathContext.UNLIMITED);
-        int n = scale;
-
-        // tg(x) = sqrt(1/cos^2(x)-1)
-        do {
-            last = value;
-            try {
-                value = BigDecimalSqrt.sqrt(
-                    new BigDecimal(1d, MathContext.UNLIMITED) //1
-                            .divide(new BigDecimal(cosVal*cosVal, MathContext.UNLIMITED), n, RoundingMode.UP) // /cos^2(x)
-                            .subtract(new BigDecimal(1d, MathContext.UNLIMITED)),       // -1
-                    MathContext.DECIMAL128
-                );
-            }catch (ArithmeticException e) {
-                return NaN;
-            }
-            n++;
-        } while (getPrecision() <= value.subtract(last).abs().doubleValue() && n < MAX_ITERATIONS);
-
-        tan = value.setScale(n, RoundingMode.UP).doubleValue();
-        arg = subOverages(arg);
-
-        if(arg > -PI / 2 && arg < 0 || arg > PI / 2 && arg < PI)
-            tan = -tan;
-        return tan;
-    }
-
-    protected static double subOverages(double arg) {
-        long periodCounter = (long) (arg / PI) + ((arg > 0)? 1: -1);
-
-        if(arg > PI / 2 || arg < -PI / 2)
-            arg -= periodCounter * PI;
-        return arg;
-    }
+    double result = testMap.get(x);
+    return result;
+  }
 }

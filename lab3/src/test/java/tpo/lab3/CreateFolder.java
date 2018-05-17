@@ -1,19 +1,21 @@
 package tpo.lab3;
 
 
-import java.util.concurrent.TimeUnit;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import org.openqa.selenium.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SignInTest {
+import java.util.concurrent.TimeUnit;
+
+public class CreateFolder {
   private WebDriver driverCrome, driverFirefox;
   private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
@@ -29,14 +31,14 @@ public class SignInTest {
     loginUrl = "https://www.google.com/intl/ru/drive/";
     baseUrl = "https://drive.google.com";
     driverCrome = new ChromeDriver();
-    driverFirefox = new FirefoxDriver();
     driverCrome.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    driverFirefox.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     waitCrome = new WebDriverWait(driverCrome, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
+    driverFirefox = new FirefoxDriver();
+    driverFirefox.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     waitFirefox = new WebDriverWait(driverFirefox, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
   }
 
-  private void doSuccessfulLogin(WebDriver driver, Wait wait) throws InterruptedException {
+  private void auth(WebDriver driver, Wait wait) throws InterruptedException {
     driver.get(baseUrl);
 
     driver.findElement(By.xpath("//div[2]/div/a")).click();
@@ -50,55 +52,49 @@ public class SignInTest {
     driver.findElement(By.xpath("//div[@id='passwordNext']/content/span")).click();
 
     wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//header[@id='gb']/div[2]/div/div[4]/div/a/span"))));
-    driver.quit();
   }
 
-  @Test
-  public void successfulLoginTest() throws Exception {
-    doSuccessfulLogin(driverCrome, waitCrome);
-    doSuccessfulLogin(driverFirefox,waitFirefox);
-  }
-
-  private void doWrongLogin(WebDriver driver, Wait wait){
-    driver.get(baseUrl);
-    driver.findElement(By.xpath("//div[2]/div/a")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])"))));
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).clear();
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).sendKeys("test");
-    driver.findElement(By.xpath("(//span[contains(text(),'Далее')])")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//div[contains(text(),'Не удалось найти аккаунт Google')])"))));
+  public void doCreateFolderOk(WebDriver driver, Wait wait){
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']"))));
+    driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//div[contains(text(),'Папку')])"))));
+    driver.findElement(By.xpath("(//div[contains(text(),'Папку')])")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']"))));
+    driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).clear();
+    driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).sendKeys("TestFolderTPOlab3");
+    driver.findElement(By.name("ok")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[@aria-label='TestFolderTPOlab3']"))));
     driver.quit();
   }
 
 
   @Test
-  public void wrongLoginTest() throws Exception {
-    doWrongLogin(driverCrome, waitCrome);
-    doWrongLogin(driverFirefox,waitFirefox);
+  public void CreateTFolderOkTest() throws Exception {
+    auth(driverCrome,waitCrome);
+    doCreateFolderOk(driverCrome, waitCrome);
+    auth(driverFirefox,waitFirefox);
+    doCreateFolderOk(driverFirefox,waitFirefox);
   }
 
-  private void doWrongPassword(WebDriver driver, Wait wait) throws InterruptedException {
-    driver.get(baseUrl);
 
-    driver.findElement(By.xpath("//div[2]/div/a")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])"))));
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).clear();
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).sendKeys(correctLogin);
-    driver.findElement(By.xpath("(//span[contains(text(),'Далее')])")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[@name='password'])"))));
-    driver.findElement(By.xpath("(//input[@name='password'])")).clear();
-    driver.findElement(By.xpath("(//input[@name='password'])")).sendKeys("test");
-    driver.findElement(By.xpath("//div[@id='passwordNext']/content/span")).click();
-
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[@name='password'])"))));
+  public void doCreateFolderCancel(WebDriver driver, Wait wait){
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button and @aria-label='Создать']"))));
+    driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button and @aria-label='Создать']")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//div[contains(text(),'Папку')])"))));
+    driver.findElement(By.xpath("(//div[contains(text(),'Папку')])")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']"))));
+    driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).clear();
+    driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).sendKeys("TestFolderTPOlab3");
+    driver.findElement(By.name("cancel")).click();
     driver.quit();
   }
 
-
   @Test
-  public void wrongPasswordTest() throws Exception {
-    doWrongPassword(driverCrome, waitCrome);
-    doWrongPassword(driverFirefox,waitFirefox);
+  public void CreateFolderCancelTest() throws Exception {
+    auth(driverCrome,waitCrome);
+    doCreateFolderCancel(driverCrome, waitCrome);
+    auth(driverFirefox,waitFirefox);
+    doCreateFolderCancel(driverFirefox,waitFirefox);
   }
 
  /* @After

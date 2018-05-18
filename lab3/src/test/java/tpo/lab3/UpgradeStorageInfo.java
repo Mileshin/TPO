@@ -21,38 +21,15 @@ public class UpgradeStorageInfo {
   private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
   private  Wait<WebDriver> waitCrome, waitFirefox;
-  private String baseUrl, loginUrl;
-  private String correctLogin = "andrejmileshin97@gmail.com";
-  private String correctPassword = "1234567890df";
+  private Util util;
 
   @Before
   public void setUp() throws Exception {
-    System.setProperty("webdriver.chrome.driver", "/Users/user/Desktop/chromedriver.exe");
-    System.setProperty("webdriver.gecko.driver", "/Users/user/Desktop/geckodriver.exe");
-    loginUrl = "https://www.google.com/intl/ru/drive/";
-    baseUrl = "https://drive.google.com";
-    driverCrome = new ChromeDriver();
-    driverCrome.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    waitCrome = new WebDriverWait(driverCrome, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
-    /*driverFirefox = new FirefoxDriver();
-    driverFirefox.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    waitFirefox = new WebDriverWait(driverFirefox, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
-  */}
-
-  private void auth(WebDriver driver, Wait wait) throws InterruptedException {
-    driver.get(baseUrl);
-
-    driver.findElement(By.xpath("//div[2]/div/a")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])"))));
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).clear();
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).sendKeys(correctLogin);
-    driver.findElement(By.xpath("(//span[contains(text(),'Далее')])")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[@name='password'])"))));
-    driver.findElement(By.xpath("(//input[@name='password'])")).clear();
-    driver.findElement(By.xpath("(//input[@name='password'])")).sendKeys(correctPassword);
-    driver.findElement(By.xpath("//div[@id='passwordNext']/content/span")).click();
-
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//header[@id='gb']/div[2]/div/div[4]/div/a/span"))));
+    util = new Util();
+    driverCrome = util.getDriverCrome();
+    waitCrome = util.getWaitCrome();
+    driverFirefox = util.getDriverFirefox();
+    waitFirefox = util.getWaitFirefox();
   }
 
   private void upgradeStorage(WebDriver driver, Wait wait) throws InterruptedException {
@@ -62,8 +39,15 @@ public class UpgradeStorageInfo {
     for(String winHandle : driver.getWindowHandles()){
       driver.switchTo().window(winHandle);
     }
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//a[contains(text(),'Подробнее...')])"))));
-    driver.findElement(By.xpath("//a[contains(text(),'Подробнее...')]")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//span[contains(text(),'Подробнее')]"))));
+    driver.findElement(By.xpath("//span[contains(text(),'Подробнее')]")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//a[contains(text(),'Подробнее...')])[2]"))));
+    driver.findElement(By.xpath("(//a[contains(text(),'Подробнее...')])[2]")).click();
+    winHandleBefore = driver.getWindowHandle();
+    for(String winHandle : driver.getWindowHandles()){
+      driver.switchTo().window(winHandle);
+    }
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//h1"))));
     assertTrue(driver.getCurrentUrl().matches("^https://support\\.google\\.com/[\\s\\S]*$"));
     driver.quit();
   }
@@ -71,9 +55,10 @@ public class UpgradeStorageInfo {
 
   @Test
   public void upgradeStorageTest() throws Exception {
-    auth(driverCrome,waitCrome);
+    util.auth(driverCrome,waitCrome);
     upgradeStorage(driverCrome, waitCrome);
-
+    util.auth(driverFirefox,waitFirefox);
+    upgradeStorage(driverFirefox,waitFirefox);
   }
 
 

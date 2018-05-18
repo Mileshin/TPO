@@ -4,20 +4,13 @@ package tpo.lab3;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotVisibleException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertTrue;
 
-public class CreateFile {
+public class UpgradeStoragePay {
   private WebDriver driverCrome, driverFirefox;
   private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
@@ -29,29 +22,30 @@ public class CreateFile {
     util = new Util();
     driverCrome = util.getDriverCrome();
     waitCrome = util.getWaitCrome();
-    driverFirefox = util.getDriverFirefox();
-    waitFirefox = util.getWaitFirefox();
+  //  driverFirefox = util.getDriverFirefox();
+ //   waitFirefox = util.getWaitFirefox();
   }
 
-  public void CreateFile(WebDriver driver, Wait wait){
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']"))));
-    driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//div[6]/div/span[2]/span/div"))));
-    driver.findElement(By.xpath("//div[6]/div/span[2]/span/div")).click();
+  private void upgradeStorage(WebDriver driver, Wait wait) throws InterruptedException {
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//a[@data-target='upgrade-storage'])"))));
+    driver.findElement(By.xpath("(//a[@data-target='upgrade-storage'])")).click();
     String winHandleBefore = driver.getWindowHandle();
     for(String winHandle : driver.getWindowHandles()){
       driver.switchTo().window(winHandle);
     }
-    assertTrue(driver.getCurrentUrl().matches("^https://docs\\.google\\.com/[\\s\\S]*$"));
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//span/span"))));
+    driver.findElement(By.xpath("//span/span")).click();
+    assertTrue(driver.getCurrentUrl().matches("^https://support\\.google\\.com/[\\s\\S]*$"));
     driver.quit();
   }
 
+
   @Test
-  public void createFileTest() throws Exception {
+  public void upgradeStorageTest() throws Exception {
     util.auth(driverCrome,waitCrome);
-    CreateFile(driverCrome, waitCrome);
-    util.auth(driverFirefox,waitFirefox);
-    CreateFile(driverFirefox,waitFirefox);
+    upgradeStorage(driverCrome, waitCrome);
+  //  util.auth(driverFirefox,waitFirefox);
+  //  upgradeStorage(driverFirefox,waitFirefox);
   }
 
 

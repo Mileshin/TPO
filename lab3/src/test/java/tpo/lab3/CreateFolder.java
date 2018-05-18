@@ -2,7 +2,9 @@ package tpo.lab3;
 
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -15,43 +17,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.concurrent.TimeUnit;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CreateFolder {
   private WebDriver driverCrome, driverFirefox;
   private boolean acceptNextAlert = true;
   private StringBuffer verificationErrors = new StringBuffer();
   private  Wait<WebDriver> waitCrome, waitFirefox;
-  private String baseUrl, loginUrl;
-  private String correctLogin = "andrejmileshin97@gmail.com";
-  private String correctPassword = "1234567890df";
+  private Util util;
 
   @Before
   public void setUp() throws Exception {
-    System.setProperty("webdriver.chrome.driver", "/Users/user/Desktop/chromedriver.exe");
-    System.setProperty("webdriver.gecko.driver", "/Users/user/Desktop/geckodriver.exe");
-    loginUrl = "https://www.google.com/intl/ru/drive/";
-    baseUrl = "https://drive.google.com";
-    driverCrome = new ChromeDriver();
-    driverCrome.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    waitCrome = new WebDriverWait(driverCrome, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
-    driverFirefox = new FirefoxDriver();
-    driverFirefox.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    waitFirefox = new WebDriverWait(driverFirefox, 5).ignoring(StaleElementReferenceException.class, ElementNotVisibleException.class);
-  }
-
-  private void auth(WebDriver driver, Wait wait) throws InterruptedException {
-    driver.get(baseUrl);
-
-    driver.findElement(By.xpath("//div[2]/div/a")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])"))));
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).clear();
-    driver.findElement(By.xpath("(//input[contains(@name, 'identifier')])")).sendKeys(correctLogin);
-    driver.findElement(By.xpath("(//span[contains(text(),'Далее')])")).click();
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//input[@name='password'])"))));
-    driver.findElement(By.xpath("(//input[@name='password'])")).clear();
-    driver.findElement(By.xpath("(//input[@name='password'])")).sendKeys(correctPassword);
-    driver.findElement(By.xpath("//div[@id='passwordNext']/content/span")).click();
-
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//header[@id='gb']/div[2]/div/div[4]/div/a/span"))));
+    util = new Util();
+    driverCrome = util.getDriverCrome();
+    waitCrome = util.getWaitCrome();
+    driverFirefox = util.getDriverFirefox();
+    waitFirefox = util.getWaitFirefox();
   }
 
   public void doCreateFolderOk(WebDriver driver, Wait wait){
@@ -70,30 +50,31 @@ public class CreateFolder {
 
   @Test
   public void CreateTFolderOkTest() throws Exception {
-    auth(driverCrome,waitCrome);
+    util.auth(driverCrome,waitCrome);
     doCreateFolderOk(driverCrome, waitCrome);
-    auth(driverFirefox,waitFirefox);
+    util.auth(driverFirefox,waitFirefox);
     doCreateFolderOk(driverFirefox,waitFirefox);
   }
 
 
   public void doCreateFolderCancel(WebDriver driver, Wait wait){
-    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button and @aria-label='Создать']"))));
-    driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button and @aria-label='Создать']")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']"))));
+    driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']")).click();
     wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("(//div[contains(text(),'Папку')])"))));
     driver.findElement(By.xpath("(//div[contains(text(),'Папку')])")).click();
     wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']"))));
     driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).clear();
     driver.findElement(By.xpath("//input[@class='lb-k-Kk g-Gh']")).sendKeys("TestFolderTPOlab3");
     driver.findElement(By.name("cancel")).click();
+    wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//button[@guidedhelpid='new_menu_button']"))));
     driver.quit();
   }
 
   @Test
   public void CreateFolderCancelTest() throws Exception {
-    auth(driverCrome,waitCrome);
+    util.auth(driverCrome,waitCrome);
     doCreateFolderCancel(driverCrome, waitCrome);
-    auth(driverFirefox,waitFirefox);
+    util.auth(driverFirefox,waitFirefox);
     doCreateFolderCancel(driverFirefox,waitFirefox);
   }
 

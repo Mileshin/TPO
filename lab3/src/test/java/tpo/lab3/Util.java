@@ -21,8 +21,8 @@ public class Util {
     private StringBuffer verificationErrors = new StringBuffer();
     private Wait<WebDriver> waitCrome, waitFirefox;
     private String baseUrl, loginUrl;
-    private String correctLogin = "andrejmileshin97@gmail.com";
-    private String correctPassword = "1234567890df";
+    private String correctLogin = "";
+    private String correctPassword = "";
 
     public WebDriver getDriverCrome(){
         return driverCrome;
